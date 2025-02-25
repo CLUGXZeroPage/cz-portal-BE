@@ -41,7 +41,7 @@ jobs:
 
       # 1.6 Docker 이미지 빌드
       - name: Build Docker Image
-        run: docker build --no-cache -t '${{ secrets.DOCKER_USERNAME }}/czportal_BE' -f .docker/Dockerfile .
+        run: docker build --no-cache -t '${{ secrets.DOCKER_USERNAME }}/czportal_be' -f .docker/Dockerfile .
 
       # 1.7 Docker Hub 로그인
       - name: Docker Hub Login
@@ -52,7 +52,7 @@ jobs:
 
       # 1.8 Docker Hub에 이미지 푸시
       - name: Push Docker Image to Docker Hub
-        run: docker push ${{ secrets.DOCKER_USERNAME }}/czportal_BE
+        run: docker push ${{ secrets.DOCKER_USERNAME }}/czportal_be
 
   # 2. AWS EC2 서버에 Docker 이미지를 배포하는 작업
   deploy:
@@ -73,11 +73,11 @@ jobs:
             sudo docker rm my-container || true
             
             # 2. 기존 Docker 이미지 삭제
-            sudo docker rmi ${{ secrets.DOCKER_USERNAME }}/czportal_BE || true
+            sudo docker rmi ${{ secrets.DOCKER_USERNAME }}/czportal_be || true
             
             # 3. Docker Hub에서 최신 이미지 pull
-            sudo docker pull ${{ secrets.DOCKER_USERNAME }}/czportal_BE
+            sudo docker pull ${{ secrets.DOCKER_USERNAME }}/czportal_be
 
             # 4. Spring Boot 애플리케이션 컨테이너 실행 (네트워크 연결)
             sudo docker run -d --name my-container -p 8080:8080 \
-            ${{ secrets.DOCKER_USERNAME }}/czportal_BE
+            ${{ secrets.DOCKER_USERNAME }}/czportal_be
