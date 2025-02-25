@@ -33,7 +33,7 @@ jobs:
         run: |
             mkdir -p src/main/resources
             echo "${{ secrets.APPLICATION_YML }}" > src/main/resources/application.yml
-          shell: bash
+        shell: bash
 
       # 1.5 Spring Boot 애플리케이션 빌드
       - name: Build with Gradle
