@@ -60,6 +60,7 @@ public class InfoService {
             ObjectMapper objectMapper = new ObjectMapper();
             try {
                 userInfoRoot userInfoRoot = objectMapper.readValue(userInfo, userInfoRoot.class);
+              
                 // 검색 결과가 없는 경우 예외 발생
                 if (userInfoRoot.getItems() == null || userInfoRoot.getItems().isEmpty()) {
                     throw new GeneralHandler(ErrorCode.MEMBER_NOT_FOUND);
@@ -73,6 +74,7 @@ public class InfoService {
                 // 현재 정보에도 동일하게 설정 (null 변환 방지)
                 newInfo.setCurrentRating(String.valueOf(rating));
                 newInfo.setCurrentSolvedCount(String.valueOf(solvedCount));
+              
             } catch (IOException e) {
                 e.printStackTrace();
                 throw new GeneralHandler(ErrorCode._BAD_REQUEST);
