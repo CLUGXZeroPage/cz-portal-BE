@@ -1,5 +1,7 @@
 package com.example.czportalpage.info.service;
 
+import com.example.czportalpage.common.exception.handler.GeneralHandler;
+import com.example.czportalpage.common.response.status.ErrorCode;
 import com.example.czportalpage.info.dto.InfoPostDto;
 import com.example.czportalpage.info.dto.InfoRequestDto;
 import com.example.czportalpage.info.entity.Info;
@@ -34,13 +36,13 @@ public class InfoService {
 
         // 1. `username`이 null이거나 비어 있다면 예외 발생
         if (infoPostDto.getUsername() == null || infoPostDto.getUsername().trim().isEmpty()) {
-            throw new IllegalArgumentException("Username cannot be null or empty");
+            throw new GeneralHandler(ErrorCode._BAD_REQUEST);
         }
 
         // 2. `username` 중복 검사
         Optional<Info> existingInfo = infoRepository.findByUsername(infoPostDto.getUsername());
         if (existingInfo.isPresent()) {
-            throw new UsernameAlreadyExistsException("Username '" + infoPostDto.getUsername() + "' already exists");
+            throw new GeneralHandler(ErrorCode._BAD_REQUEST);
         }
 
         // 3. 새로운 Info 객체 생성 및 저장
