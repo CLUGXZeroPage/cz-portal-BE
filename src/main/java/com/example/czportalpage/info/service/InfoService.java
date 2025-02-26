@@ -58,6 +58,10 @@ public class InfoService {
                 newInfo.setInitRating(String.valueOf(userInfoRoot.getItems().get(0).getRating()));
                 newInfo.setInitSolvedCount(String.valueOf(userInfoRoot.getItems().get(0).getSolvedCount()));
 
+                // null 변환 방지
+                newInfo.setCurrentRating(String.valueOf(userInfoRoot.getItems().get(0).getRating()));
+                newInfo.setInitSolvedCount(String.valueOf(userInfoRoot.getItems().get(0).getSolvedCount()));
+
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -77,6 +81,7 @@ public class InfoService {
                     solvedCountByLevelArray.append(level.getSolved()).append(",");
                 }
                 newInfo.setInitSolvedCountByLevelArray(solvedCountByLevelArray.toString());
+                newInfo.setCurrentSolvedCountByLevelArray(solvedCountByLevelArray.toString());
             } catch (IOException e) {
                 e.printStackTrace();
             }
