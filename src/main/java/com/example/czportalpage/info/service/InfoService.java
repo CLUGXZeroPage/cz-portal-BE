@@ -15,6 +15,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -30,6 +31,7 @@ import static com.example.czportalpage.info.service.jsonParse.jsonFetcher.fetchJ
 public class InfoService {
     private final InfoRepository infoRepository;
 
+    @Transactional
     public Long createInfo(InfoPostDto infoPostDto){
 
         log.info("유저 정보를 받았습니다 : {}", infoPostDto.getUsername());
@@ -53,6 +55,11 @@ public class InfoService {
         try {
             String urlString = "https://solved.ac/api/v3/search/user?query=" + newInfo.getUsername();  // 사용하고자 하는 url로 변경
             String userInfo = fetchJson(urlString);
+
+            if(userInfo == null){
+                throw new GeneralHandler(ErrorCode._BAD_REQUEST);
+            }
+
             ObjectMapper objectMapper = new ObjectMapper();
             try {
 
