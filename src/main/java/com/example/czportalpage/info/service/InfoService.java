@@ -38,13 +38,13 @@ public class InfoService {
 
         // 1. username이 null이거나 비어 있다면 예외 발생
         if (infoPostDto.getUsername() == null || infoPostDto.getUsername().trim().isEmpty()) {
-            throw new GeneralHandler(ErrorCode._BAD_REQUEST);
+            throw new GeneralHandler(ErrorCode.MEMBER_LOGIN_FAILURE);
         }
 
         // 2. username 중복 검사
         Optional<Info> existingInfo = infoRepository.findByUsername(infoPostDto.getUsername());
         if (existingInfo.isPresent()) {
-            throw new GeneralHandler(ErrorCode._BAD_REQUEST);
+            throw new GeneralHandler(ErrorCode.MEMBER_DUPLICATE);
         }
 
         // 3. 새로운 Info 객체 생성 및 기본 정보 설정
