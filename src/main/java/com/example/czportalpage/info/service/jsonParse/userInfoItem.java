@@ -13,50 +13,51 @@ public class userInfoItem {
     @Getter @Setter
     private boolean verified;
     @Getter @Setter
-    private Integer badgeId;
+    private String badgeId;
     @Getter @Setter
     private String backgroundId;
     @Getter @Setter
     private String profileImageUrl;
     @Getter @Setter
-    private int solvedCount;
+    private Integer solvedCount;
     @Getter @Setter
-    private int voteCount;
+    private Integer voteCount;
+
     private int userClass;
     @Getter @Setter
     private String classDecoration;
     @Getter @Setter
-    private int rivalCount;
+    private Integer rivalCount;
     @Getter @Setter
-    private int reverseRivalCount;
+    private Integer reverseRivalCount;
     @Getter @Setter
-    private int tier;
+    private Integer tier;
     @Getter @Setter
-    private int rating;
+    private Integer rating;
     @Getter @Setter
-    private int ratingByProblemsSum;
+    private Integer ratingByProblemsSum;
     @Getter @Setter
-    private int ratingByClass;
+    private Integer ratingByClass;
     @Getter @Setter
-    private int ratingBySolvedCount;
+    private Integer ratingBySolvedCount;
     @Getter @Setter
-    private int ratingByVoteCount;
+    private Integer ratingByVoteCount;
     @Getter @Setter
-    private int arenaTier;
+    private Integer arenaTier;
     @Getter @Setter
-    private int arenaRating;
+    private Integer arenaRating;
     @Getter @Setter
-    private int arenaMaxTier;
+    private Integer arenaMaxTier;
     @Getter @Setter
-    private int arenaMaxRating;
+    private Integer arenaMaxRating;
     @Getter @Setter
-    private int arenaCompetedRoundCount;
+    private Integer arenaCompetedRoundCount;
     @Getter @Setter
-    private int maxStreak;
+    private Integer maxStreak;
     @Getter @Setter
-    private int coins;
+    private Integer coins;
     @Getter @Setter
-    private int stardusts;
+    private Integer stardusts;
     @Getter @Setter
     private String joinedAt;
     @Getter @Setter
@@ -64,7 +65,7 @@ public class userInfoItem {
     @Getter @Setter
     private String proUntil;
     @Getter @Setter
-    private int rank;
+    private Integer rank;
 
     @JsonProperty("class")
     public int getUserClass() {
