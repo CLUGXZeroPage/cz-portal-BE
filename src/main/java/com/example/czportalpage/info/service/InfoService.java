@@ -32,59 +32,67 @@ public class InfoService {
     private final InfoRepository infoRepository;
 
     @Transactional
-    public Long createInfo(InfoPostDto infoPostDto){
+    public Long createInfo(InfoPostDto infoPostDto) {
 
         log.info("유저 정보를 받았습니다 : {}", infoPostDto.getUsername());
 
-        // 1. `username`이 null이거나 비어 있다면 예외 발생
+        // 1. username이 null이거나 비어 있다면 예외 발생
         if (infoPostDto.getUsername() == null || infoPostDto.getUsername().trim().isEmpty()) {
             throw new GeneralHandler(ErrorCode._BAD_REQUEST);
         }
 
-        // 2. `username` 중복 검사
+        // 2. username 중복 검사
         Optional<Info> existingInfo = infoRepository.findByUsername(infoPostDto.getUsername());
         if (existingInfo.isPresent()) {
             throw new GeneralHandler(ErrorCode._BAD_REQUEST);
         }
 
-        // 3. 새로운 Info 객체 생성 및 저장
+        // 3. 새로운 Info 객체 생성 및 기본 정보 설정
         Info newInfo = new Info();
         newInfo.setUsername(infoPostDto.getUsername());
         newInfo.setNickname(infoPostDto.getNickname());
 
+        // 4. solved.ac API를 호출하여 실제 유저 정보가 존재하는지 확인
         try {
-            String urlString = "https://solved.ac/api/v3/search/user?query=" + newInfo.getUsername();  // 사용하고자 하는 url로 변경
+            String urlString = "https://solved.ac/api/v3/search/user?query=" + newInfo.getUsername();
             String userInfo = fetchJson(urlString);
-
-            if(userInfo == null){
-                throw new GeneralHandler(ErrorCode._BAD_REQUEST);
-            }
 
             ObjectMapper objectMapper = new ObjectMapper();
             try {
-
                 userInfoRoot userInfoRoot = objectMapper.readValue(userInfo, userInfoRoot.class);
-                newInfo.setInitRating(String.valueOf(userInfoRoot.getItems().get(0).getRating()));
-                newInfo.setInitSolvedCount(String.valueOf(userInfoRoot.getItems().get(0).getSolvedCount()));
+                // 검색 결과가 없는 경우 예외 발생
+                if (userInfoRoot.getItems() == null || userInfoRoot.getItems().isEmpty()) {
+                    throw new GeneralHandler(ErrorCode.MEMBER_NOT_FOUND);
+                }
+                // 첫 번째 항목의 정보를 기반으로 초기 정보 설정
+                int rating = userInfoRoot.getItems().get(0).getRating();
+                int solvedCount = userInfoRoot.getItems().get(0).getSolvedCount();
+                newInfo.setInitRating(String.valueOf(rating));
+                newInfo.setInitSolvedCount(String.valueOf(solvedCount));
 
-                // null 변환 방지
-                newInfo.setCurrentRating(String.valueOf(userInfoRoot.getItems().get(0).getRating()));
-                newInfo.setInitSolvedCount(String.valueOf(userInfoRoot.getItems().get(0).getSolvedCount()));
-
+                // 현재 정보에도 동일하게 설정 (null 변환 방지)
+                newInfo.setCurrentRating(String.valueOf(rating));
+                newInfo.setCurrentSolvedCount(String.valueOf(solvedCount));
             } catch (IOException e) {
                 e.printStackTrace();
+                throw new GeneralHandler(ErrorCode._BAD_REQUEST);
             }
         } catch (Exception e) {
             e.printStackTrace();
+            throw new GeneralHandler(ErrorCode._BAD_REQUEST);
         }
 
+        // 5. solved.ac의 문제 통계 API 호출 및 레벨별 해결 수 저장
         try {
-            String urlString = "https://solved.ac/api/v3/user/problem_stats?handle=" + newInfo.getUsername();  // 사용하고자 하는 url로 변경
+            String urlString = "https://solved.ac/api/v3/user/problem_stats?handle=" + newInfo.getUsername();
             String levelData = fetchJson(urlString);
             ObjectMapper objectMapper = new ObjectMapper();
 
             try {
                 List<LevelData> levels = objectMapper.readValue(levelData, new TypeReference<List<LevelData>>() {});
+                if (levels == null || levels.isEmpty()) {
+                    throw new GeneralHandler(ErrorCode._BAD_REQUEST);
+                }
                 StringBuilder solvedCountByLevelArray = new StringBuilder();
                 for (LevelData level : levels) {
                     solvedCountByLevelArray.append(level.getSolved()).append(",");
@@ -93,14 +101,15 @@ public class InfoService {
                 newInfo.setCurrentSolvedCountByLevelArray(solvedCountByLevelArray.toString());
             } catch (IOException e) {
                 e.printStackTrace();
+                throw new GeneralHandler(ErrorCode._BAD_REQUEST);
             }
         } catch (Exception e) {
             e.printStackTrace();
+            throw new GeneralHandler(ErrorCode._BAD_REQUEST);
         }
 
-        // 저장소에 저장
+        // 6. 저장소에 Info 저장
         Info savedInfo = infoRepository.save(newInfo);
-
         return infoRepository.save(savedInfo).getInfoId();
     }
 
